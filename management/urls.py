@@ -5,9 +5,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('product/groups/info/', views.productsGroup, name='product-group'),
-    path('product/groups/products/', views.mainProduct, name='products'),
-    path('product/groups/other/products/', views.otherProduct, name='other-products'),
+    path('product/groups/info/', views.products_group, name='product-group'),
+    path('product/groups/products/', views.product, name='products'),
     path('product/groups/sizes/', views.size, name='products-size'),
     path('product/search/', views.search, name='products-search'),
     path('user/register/', views.register, name='register'),

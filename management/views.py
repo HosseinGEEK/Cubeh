@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import User, Order, Group, Product, OtherProduct, Size
+from .models import User, Order, Group, Product, Size
 from json import dumps, loads
 from django.views.decorators.csrf import csrf_exempt
 
@@ -11,7 +11,7 @@ def home(request):
     return HttpResponse('<h1>This Is Managerial Panel For Cubeh Application </h1>')
 
 
-def productsGroup(request):
+def products_group(request):
     groups = []
     group = Group.objects.all()
     for g in group:
@@ -26,36 +26,15 @@ def productsGroup(request):
 
 # post a group_name and key of brands
 @csrf_exempt
-def mainProduct(request):
+def product(request):
     group = []
     if request.method == "POST":
         try:
             info = loads(request.body.decode('utf-8'))
             g_name = info[0]
             brand = info[1]
-            products = Product.objects.filter(group__name=g_name, brand=brand).order_by('priority')
-            for p in products:
-                context = {
-                    'name': p.name,
-                    'image_url': p.image_url,
-                }
-                group.append(context)
-        except:
-            return HttpResponse('<h1>:)</h1>')
-
-    return HttpResponse(dumps(group))
-
-
-# post a group_name and key of brands
-@csrf_exempt
-def otherProduct(request):
-    group = []
-    if request.method == "POST":
-        try:
-            info = loads(request.body.decode('utf-8'))
-            g_name = info[0]
-            brand = info[1]
-            products = OtherProduct.objects.filter(group__name=g_name, brand=brand).order_by('priority')
+            type = info[2]
+            products = Product.objects.filter(group__name=g_name, brand=brand, type=type).order_by('priority')
             for p in products:
                 context = {
                     'name': p.name,
@@ -74,12 +53,8 @@ def size(request):
     if request.method == "POST":
         try:
             info = loads(request.body.decode('utf-8'))
-            product_type = info[0]
-            product_name = info[1]
-            if product_type == 'main':
-                sizes = Size.objects.filter(main_product__name=product_name)
-            else:
-                sizes = Size.objects.filter(other_product__name=product_name)
+            product_name = info[0]
+            sizes = Size.objects.filter(product__name=product_name)
 
             for s in sizes:
                 context = {
@@ -102,9 +77,10 @@ def order(request):
             info = loads(request.body.decode('utf-8'))
             phone_num = info['phone_number']
             user = User.objects.get(phone_number=phone_num)
-            content = info['order_content']
             number = info['order_number']
-            o = Order(order_number=number, user=user, content=content)
+            content = info['order_content']
+            total_p = info['total_price']
+            o = Order(order_number=number, user=user, content=content, total_price=total_p)
             o.save(force_insert=True)
             return HttpResponse(dumps({"record": "1"}))
         except:
@@ -119,18 +95,10 @@ def search(request):
     if request.method == "POST":
         try:
             info = loads(request.body.decode('utf-8'))
-            pName = info[0]
-            mainProducts = Product.objects.filter(name=pName).order_by('priority')
-            otherProducts = OtherProduct.objects.filter(name=pName).order_by('priority')
+            p_name = info[0]
+            products = Product.objects.filter(name__contains=p_name).order_by('priority')
 
-            for p in mainProducts:
-                context = {
-                    'name': p.name,
-                    'image_url': p.image_url,
-                    'brand': p.brand
-                }
-                products.append(context)
-            for p in otherProducts:
+            for p in products:
                 context = {
                     'name': p.name,
                     'image_url': p.image_url,
