@@ -91,7 +91,7 @@ def order(request):
 
 @csrf_exempt
 def search(request):
-    products = []
+    group = []
     if request.method == "POST":
         try:
             info = loads(request.body.decode('utf-8'))
@@ -104,11 +104,32 @@ def search(request):
                     'image_url': p.image_url,
                     'brand': p.brand
                 }
-                products.append(context)
+                group.append(context)
 
-            return HttpResponse(dumps(products))
+            return HttpResponse(dumps(group))
         except:
             return HttpResponse('<h1>:)</h1>')
+    return HttpResponse('<h1>:)</h1>')
+
+
+@csrf_exempt
+def update_unit_price(request):
+    group = []
+    if request.method == "POST":
+        info = loads(request.body.decode('utf-8'))
+        for s in info:
+            size = Size.objects.filter(code=s)
+            if len(size) != 0:
+                price = size[0].price
+                dis = size[0].discount
+                context = {
+                    'price': price,
+                    'discount': dis
+                }
+
+                group.append(context)
+        return HttpResponse(dumps(group))
+
     return HttpResponse('<h1>:)</h1>')
 
 
@@ -158,18 +179,18 @@ def login(request):
                 password = info['password']
                 if user[0].password == password:
                     user.update(status=True)
-                    return HttpResponse(dumps({"login":"1"}))
+                    return HttpResponse(dumps({"login": "1"}))
                 else:
-                    return HttpResponse(dumps({"login":"2"}))
+                    return HttpResponse(dumps({"login": "2"}))
             else:
-                return HttpResponse(dumps({"login":"0"}))
+                return HttpResponse(dumps({"login": "0"}))
         except:
             return HttpResponse('<h1>:)</h1>')
     return HttpResponse('<h1>:)</h1>')
 
 
 @csrf_exempt
-def passwordReminder(request):
+def password_reminder(request):
     if request.method == "POST":
         try:
             info = loads(request.body.decode('utf-8'))
@@ -187,7 +208,7 @@ def passwordReminder(request):
 
 
 @csrf_exempt
-def getUserInfo(request):
+def get_user_info(request):
     if request.method == "POST":
         try:
             info = loads(request.body.decode('utf-8'))
