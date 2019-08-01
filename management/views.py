@@ -115,23 +115,47 @@ def search(request):
 @csrf_exempt
 def update_unit_price(request):
     group = []
-    if request.method == "POST":
-        info = loads(request.body.decode('utf-8'))
-        for s in info:
-            size = Size.objects.filter(code=s)
-            if len(size) != 0:
-                price = size[0].price
-                dis = size[0].discount
-                context = {
-                    'price': price,
-                    'discount': dis
-                }
+    try:
+        if request.method == "POST":
+            info = loads(request.body.decode('utf-8'))
+            for s in info:
+                size = Size.objects.filter(code=s)
+                if len(size) != 0:
+                    price = size[0].price
+                    dis = size[0].discount
+                    context = {
+                        'price': price,
+                        'discount': dis
+                    }
 
-                group.append(context)
-        return HttpResponse(dumps(group))
+                    group.append(context)
+            return HttpResponse(dumps(group))
+    except:
+        return HttpResponse('<h1>:)</h1>')
 
     return HttpResponse('<h1>:)</h1>')
 
+
+def product_compare(request):
+    group = []
+    if request.method == "POST":
+        info = loads(request.body.decode('utf-8'))
+        p_name = info[0]
+        p_size = info[1]
+
+        sizes = Size.objects.filter(product__name=p_name, size=p_size)
+        for s in sizes:
+            context = {
+                "product_name": s.product.name,
+                "size": s.size,
+                "code": s.code,
+                "price": s.price,
+                "dis": s.discount,
+                "brand": s.product.brand
+            }
+
+            group.append(context)
+        return HttpResponse(dumps(group))
 
 @csrf_exempt
 def register(request):

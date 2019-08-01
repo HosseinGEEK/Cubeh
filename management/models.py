@@ -60,7 +60,7 @@ class User(models.Model):
 
     def __str__(self):
         return self.fname + ' ' + self.lname + '، تاریخ ثبت نام: ' \
-               + jalali.Gregorian(self.join_date).persian_string()
+               + self.join_date
 
 
 class Order(models.Model):
