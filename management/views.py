@@ -54,7 +54,8 @@ def size(request):
         try:
             info = loads(request.body.decode('utf-8'))
             product_name = info[0]
-            sizes = Size.objects.filter(product__name=product_name)
+            brand = info[1]
+            sizes = Size.objects.filter(product__name=product_name, product__brand=brand)
 
             for s in sizes:
                 context = {
@@ -136,6 +137,7 @@ def update_unit_price(request):
     return HttpResponse('<h1>:)</h1>')
 
 
+@csrf_exempt
 def product_compare(request):
     group = []
     if request.method == "POST":
@@ -147,10 +149,11 @@ def product_compare(request):
         for s in sizes:
             context = {
                 "product_name": s.product.name,
+                "image": s.product.image_url,
                 "size": s.size,
                 "code": s.code,
                 "price": s.price,
-                "dis": s.discount,
+                "discount": s.discount,
                 "brand": s.product.brand
             }
 
@@ -184,7 +187,7 @@ def logout(request):
             user = User.objects.filter(phone_number=phone_num)
             user.update(status=False)
 
-            return HttpResponse(dumps("خروج با موفقیت صورت پذیرفت."))
+            return HttpResponse(dumps({"logout": "خروج با موفقیت صورت پذیرفت."}))
         except:
             return HttpResponse('<h1>:)</h1>')
     return HttpResponse('<h1>:)</h1>')
@@ -203,11 +206,20 @@ def login(request):
                 password = info['password']
                 if user[0].password == password:
                     user.update(status=True)
-                    return HttpResponse(dumps({"login": "1"}))
+                    u = user[0]
+                    context = {
+                        'fname': u.fname,
+                        'lname': u.lname,
+                        'phone_number': u.phone_number,
+                        'email': u.email,
+                        'date_of_birth': u.date_of_birth,
+                        'login': "1"
+                    }
+                    return HttpResponse(dumps(context))
                 else:
-                    return HttpResponse(dumps({"login": "2"}))
+                    return HttpResponse(dumps({"login": "0"}))
             else:
-                return HttpResponse(dumps({"login": "0"}))
+                return HttpResponse(dumps({"login": "-1"}))
         except:
             return HttpResponse('<h1>:)</h1>')
     return HttpResponse('<h1>:)</h1>')
@@ -226,33 +238,6 @@ def password_reminder(request):
                 return HttpResponse(dumps("پنل پیامکی"))
             else:
                 return HttpResponse(dumps("چنین کاربری وجود ندارد!!!"))
-        except:
-            return HttpResponse('<h1>:)</h1>')
-    return HttpResponse('<h1>:)</h1>')
-
-
-@csrf_exempt
-def get_user_info(request):
-    if request.method == "POST":
-        try:
-            info = loads(request.body.decode('utf-8'))
-            phone_num = info[0]
-            user = User.objects.filter(phone_number=phone_num)
-            if len(user) != 0:
-                u = user[0]
-                if u.status:
-                    context = {
-                        'fname': u.fname,
-                        'lname': u.lname,
-                        'phone_number': u.phone_number,
-                        'email': u.email,
-                        'date_of_birth': u.date_of_birth
-                    }
-                    return HttpResponse(dumps(context))
-                else:
-                    return HttpResponse(dumps("ابتدا وارد پنل خود شوید!"))
-            else:
-                return HttpResponse(dumps("ابتدا ثبت نام کنید!"))
         except:
             return HttpResponse('<h1>:)</h1>')
     return HttpResponse('<h1>:)</h1>')

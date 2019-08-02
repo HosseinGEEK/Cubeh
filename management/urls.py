@@ -15,7 +15,6 @@ urlpatterns = [
     path('user/logout/', views.logout, name='logout'),
     path('user/login/', views.login, name='login'),
     path('user/password/reminder/', views.password_reminder, name='password-reminder'),
-    path('user/user/info/', views.get_user_info, name='user-info'),
     path('user/order/', views.order, name='order_content')
 ]
 
