@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import User, Order, Group, Product, Size
+from .models import User, Order, Group, Product, Size, Question, Ticket, Slider, LatestNews
 from json import dumps, loads
 from django.views.decorators.csrf import csrf_exempt
 
@@ -116,8 +116,8 @@ def search(request):
 @csrf_exempt
 def update_unit_price(request):
     group = []
-    try:
-        if request.method == "POST":
+    if request.method == "POST":
+        try:
             info = loads(request.body.decode('utf-8'))
             for s in info:
                 size = Size.objects.filter(code=s)
@@ -131,9 +131,8 @@ def update_unit_price(request):
 
                     group.append(context)
             return HttpResponse(dumps(group))
-    except:
-        return HttpResponse('<h1>:)</h1>')
-
+        except:
+            return HttpResponse('<h1>:)</h1>')
     return HttpResponse('<h1>:)</h1>')
 
 
@@ -141,24 +140,29 @@ def update_unit_price(request):
 def product_compare(request):
     group = []
     if request.method == "POST":
-        info = loads(request.body.decode('utf-8'))
-        p_name = info[0]
-        p_size = info[1]
+        try:
+            info = loads(request.body.decode('utf-8'))
+            p_name = info[0]
+            p_size = info[1]
 
-        sizes = Size.objects.filter(product__name=p_name, size=p_size)
-        for s in sizes:
-            context = {
-                "product_name": s.product.name,
-                "image": s.product.image_url,
-                "size": s.size,
-                "code": s.code,
-                "price": s.price,
-                "discount": s.discount,
-                "brand": s.product.brand
-            }
+            sizes = Size.objects.filter(product__name=p_name, size=p_size)
+            for s in sizes:
+                context = {
+                    "product_name": s.product.name,
+                    "image": s.product.image_url,
+                    "size": s.size,
+                    "code": s.code,
+                    "price": s.price,
+                    "discount": s.discount,
+                    "brand": s.product.brand
+                }
 
-            group.append(context)
-        return HttpResponse(dumps(group))
+                group.append(context)
+            return HttpResponse(dumps(group))
+        except:
+            return HttpResponse('<h1>:)</h1>')
+    return HttpResponse('<h1>:)</h1>')
+
 
 @csrf_exempt
 def register(request):
@@ -241,3 +245,100 @@ def password_reminder(request):
         except:
             return HttpResponse('<h1>:)</h1>')
     return HttpResponse('<h1>:)</h1>')
+
+
+@csrf_exempt
+def update_profile(request):
+    if request.method == "POST":
+        img = request.FILES.get('picture')
+        info = request.POST
+        phone_num = info['phone_number']
+        fname = info['fname']
+        lname = info['lname']
+        passw = info['password']
+        em = info['email']
+        date_b = info['date_of_birth']
+
+        user = User.objects.filter(phone_number=phone_num)
+        user.update(fname=fname, lname=lname, password=passw, email=em, date_of_birth=date_b, image=img)
+
+        return HttpResponse(dumps({'status': '1'}))
+
+    return HttpResponse('<h1>:)</h1>')
+
+
+@csrf_exempt
+def user_info(request):
+    if request.method == "POST":
+        phone_num = loads(request.body.decode('utf-8'))['phone_number']
+        user = User.objects.get(phone_number=phone_num)
+
+        context = {
+            'fname': user.fname,
+            'lname': user.lname,
+            'image': user.image.url,
+            'email': user.email,
+            'date_of_birth': user.date_of_birth
+        }
+
+        return HttpResponse(dumps(context))
+    return HttpResponse('<h1>:)</h1>')
+
+
+def question(request):
+    groups = []
+    ques = Question.objects.all()
+
+    for q in ques:
+        context = {
+            'title': q.title,
+            'body': q.body
+        }
+
+        groups.append(context)
+
+    return HttpResponse(dumps(groups))
+
+
+def latest_new(request):
+    groups = []
+    lat = LatestNews.objects.all()
+
+    for q in lat:
+        context = {
+            'title': q.title,
+            'body': q.body
+        }
+
+        groups.append(context)
+
+    return HttpResponse(dumps(groups))
+
+
+@csrf_exempt
+def ticket(request):
+    if (request.method == "POST"):
+        info = loads(request.body.decode('utf-8'))
+        phone_num = info['phone_number']
+        ti = info['title']
+        exp = info['explain']
+        ra = info['rate']
+        prob = info['problem']
+
+        user = User.objects.get(phone_number=phone_num)
+
+        Ticket(user=user, title=ti, explanation=exp, rating=ra, problem=prob).save(force_insert=True)
+
+        return HttpResponse(dumps({'status': '1'}))
+
+    return HttpResponse('<h1>:)</h1>')
+
+
+def slider(request):
+    groups = []
+    slide = Slider.objects.all()
+
+    for s in slide:
+        groups.append(s.image_url)
+
+    return HttpResponse(dumps(groups))

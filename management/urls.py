@@ -15,8 +15,18 @@ urlpatterns = [
     path('user/logout/', views.logout, name='logout'),
     path('user/login/', views.login, name='login'),
     path('user/password/reminder/', views.password_reminder, name='password-reminder'),
-    path('user/order/', views.order, name='order_content')
+    path('user/update/profile/', views.update_profile, name='update-profile'),
+    path('user/profile/info/', views.user_info, name='user-profile-info'),
+    path('user/order/', views.order, name='order_content'),
+    path('support/questions/', views.question, name='frequently-asked-questions'),
+    path('support/latestnews/', views.latest_new, name='latest-news'),
+    path('support/ticket/', views.ticket, name='ticket'),
+    path('support/slider/', views.slider, name='slider'),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+#SERVER PASSWORD: aXVfT#kPumKN 
+#GIT URL FOR PULL: https://github.com/HosseinGEEK/Cubeh.git

@@ -52,11 +52,12 @@ class User(models.Model):
     phone_number = models.CharField(primary_key=True, max_length=11)
     password = models.CharField(max_length=10)
     status = models.BooleanField(default=True)
+    image = models.FileField(null=True, blank=True, upload_to='usersImage/')
     email = models.EmailField(null=True, blank=True)
     date_of_birth = models.CharField(max_length=20, blank=True, null=True)
     join_date = models.CharField(default=jalali.Gregorian(datetime.now().date()).persian_string(), max_length=20,
                                  editable=False)
-    last_seen = models.CharField(max_length=20, editable=False)
+    # last_seen = models.CharField(max_length=20, editable=False)
 
     def __str__(self):
         return self.fname + ' ' + self.lname + '، تاریخ ثبت نام: ' \
@@ -73,3 +74,34 @@ class Order(models.Model):
 
     def __str__(self):
         return self.user.phone_number + '-->' + self.order_record_date
+
+
+class Question(models.Model):
+    title = models.CharField(max_length=100)
+    body = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+
+class Ticket(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=25)
+    explanation = models.TextField()
+    rating = models.CharField(max_length=5)
+    problem = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.lname + self.title
+
+class Slider(models.Model):
+    image_url = models.CharField(max_length=200)
+
+
+class LatestNews(models.Model):
+    title = models.CharField(max_length=100)
+    body = models.TextField()
+
+    def __str__(self):
+        return self.title
+
