@@ -1,5 +1,10 @@
+import os
+
+from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render
 from django.http import HttpResponse
+
+from cubeh import settings
 from .models import User, Order, Group, Product, Size, Question, Ticket, Slider, LatestNews
 from json import dumps, loads
 from django.views.decorators.csrf import csrf_exempt
@@ -247,24 +252,41 @@ def password_reminder(request):
     return HttpResponse('<h1>:)</h1>')
 
 
+class MyFileStorage(FileSystemStorage):
+
+    # This method is actually defined in Storage
+    def get_available_name(self, name, **kwargs):
+        print(settings.MEDIA_ROOT)
+        if self.exists(name):
+            os.remove(os.path.join(settings.MEDIA_ROOT+'/usersImage/', name))
+        return name
+
 @csrf_exempt
 def update_profile(request):
     if request.method == "POST":
-        img = request.FILES.get('picture')
+        img = request.FILES.get('image')
+        path = 'media/usersImage/'
+
+        if img != None:
+            fs = MyFileStorage(path)
+            fs.get_available_name(name=img.name)
+            fs.save(img.name, img)
+            img = path+img.name
+
         info = request.POST
         phone_num = info['phone_number']
         fname = info['fname']
         lname = info['lname']
-        passw = info['password']
         em = info['email']
         date_b = info['date_of_birth']
 
         user = User.objects.filter(phone_number=phone_num)
-        user.update(fname=fname, lname=lname, password=passw, email=em, date_of_birth=date_b, image=img)
+        user.update(fname=fname, lname=lname, image_path=img, email=em, date_of_birth=date_b)
 
         return HttpResponse(dumps({'status': '1'}))
 
     return HttpResponse('<h1>:)</h1>')
+
 
 
 @csrf_exempt
@@ -276,7 +298,7 @@ def user_info(request):
         context = {
             'fname': user.fname,
             'lname': user.lname,
-            'image': user.image.url,
+            'image': user.image_path,
             'email': user.email,
             'date_of_birth': user.date_of_birth
         }
