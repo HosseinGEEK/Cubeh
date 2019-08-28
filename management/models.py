@@ -94,7 +94,7 @@ class Ticket(models.Model):
     problem = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.lname + self.title
+        return self.user.lname + ' ' + self.title
 
 
 class Slider(models.Model):

@@ -1,7 +1,7 @@
 import os
 
 from django.core.files.storage import FileSystemStorage
-from django.shortcuts import render
+import base64
 from django.http import HttpResponse
 
 from cubeh import settings
@@ -252,36 +252,24 @@ def password_reminder(request):
     return HttpResponse('<h1>:)</h1>')
 
 
-class MyFileStorage(FileSystemStorage):
-
-    # This method is actually defined in Storage
-    def get_available_name(self, name, **kwargs):
-        print(settings.MEDIA_ROOT)
-        if self.exists(name):
-            os.remove(os.path.join(settings.MEDIA_ROOT+'/usersImage/', name))
-        return name
-
 @csrf_exempt
 def update_profile(request):
     if request.method == "POST":
-        img = request.FILES.get('image')
-        path = 'media/usersImage/'
-
-        if img != None:
-            fs = MyFileStorage(path)
-            fs.get_available_name(name=img.name)
-            fs.save(img.name, img)
-            img = path+img.name
-
-        info = request.POST
+        info = loads(request.body.decode('utf-8'))
         phone_num = info['phone_number']
         fname = info['fname']
         lname = info['lname']
         em = info['email']
         date_b = info['date_of_birth']
+        img = info['image']
+        path = '../media/usersImage/' + phone_num + '.png'
+
+        imgdata = base64.b64decode(img)
+        with open(path, 'wb') as f:
+            f.write(imgdata)
 
         user = User.objects.filter(phone_number=phone_num)
-        user.update(fname=fname, lname=lname, image_path=img, email=em, date_of_birth=date_b)
+        user.update(fname=fname, lname=lname, image_path=path, email=em, date_of_birth=date_b)
 
         return HttpResponse(dumps({'status': '1'}))
 
