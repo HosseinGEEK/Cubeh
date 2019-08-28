@@ -37,13 +37,13 @@ def product(request):
         try:
             info = loads(request.body.decode('utf-8'))
             g_name = info[0]
-            brand = info[1]
-            type = info[2]
-            products = Product.objects.filter(group__name=g_name, brand=brand, type=type).order_by('priority')
+            type = info[1]
+            products = Product.objects.filter(group__name=g_name, type=type).order_by('priority')
             for p in products:
                 context = {
                     'name': p.name,
                     'image_url': p.image_url,
+                    'brand': p.get_brand_display()
                 }
                 group.append(context)
         except:
@@ -108,7 +108,7 @@ def search(request):
                 context = {
                     'name': p.name,
                     'image_url': p.image_url,
-                    'brand': p.brand
+                    'brand': p.get_brand_display()
                 }
                 group.append(context)
 
@@ -159,7 +159,7 @@ def product_compare(request):
                     "code": s.code,
                     "price": s.price,
                     "discount": s.discount,
-                    "brand": s.product.brand
+                    "brand": s.product.get_brand_display()
                 }
 
                 group.append(context)
