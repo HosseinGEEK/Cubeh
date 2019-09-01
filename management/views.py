@@ -60,7 +60,15 @@ def size(request):
             info = loads(request.body.decode('utf-8'))
             product_name = info[0]
             brand = info[1]
-            sizes = Size.objects.filter(product__name=product_name, product__brand=brand)
+            if brand == 'ایزی پایپ':
+                b = 'easy'
+            elif brand == 'نیو پایپ':
+                b = 'new'
+            elif brand == 'ایساتیس':
+                b = 'ica'
+            else:
+                b = None
+            sizes = Size.objects.filter(product__name=product_name, product__brand=b)
 
             for s in sizes:
                 context = {
@@ -262,11 +270,12 @@ def update_profile(request):
         em = info['email']
         date_b = info['date_of_birth']
         img = info['image']
-        path = '../media/usersImage/' + phone_num + '.png'
+        path = 'media/usersImage/' + phone_num + '.png'
 
         imgdata = base64.b64decode(img)
-        with open(path, 'wb') as f:
-            f.write(imgdata)
+        if img != '':
+            with open(path, 'wb') as f:
+                f.write(imgdata)
 
         user = User.objects.filter(phone_number=phone_num)
         user.update(fname=fname, lname=lname, image_path=path, email=em, date_of_birth=date_b)

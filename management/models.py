@@ -26,13 +26,7 @@ class Product(models.Model):
     type = models.CharField(max_length=5, choices=types)
 
     def __str__(self):
-        if self.brand == 'easy':
-            b = 'ایزی پایپ'
-        elif self.brand == 'new':
-            b = 'نیو پایپ'
-        else:
-            b = 'ایساتیس'
-        return self.group.name + '-->' + self.name + '-->' + b
+        return self.group.name + '-->' + self.name + '-->' + str(self.get_brand_display())
 
 
 class Size(models.Model):
