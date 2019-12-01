@@ -24,7 +24,7 @@ urlpatterns = [
     path('support/slider/', views.slider, name='slider'),
 
     path('upload/productImage/', views.uploadProductImage, name='upload-product-image'),
-    path('upload/groupImage/', views.uploadProductImage, name='upload-product-image'),
+    path('upload/groupImage/', views.uploadGroupImage, name='upload-group-image'),
 ]
 
 if settings.DEBUG:
