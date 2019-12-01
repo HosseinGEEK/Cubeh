@@ -23,7 +23,8 @@ urlpatterns = [
     path('support/ticket/', views.ticket, name='ticket'),
     path('support/slider/', views.slider, name='slider'),
 
-    path('upload/productImage/', views.uploadProductImage, name='upload-product-image')
+    path('upload/productImage/', views.uploadProductImage, name='upload-product-image'),
+    path('upload/groupImage/', views.uploadProductImage, name='upload-product-image'),
 ]
 
 if settings.DEBUG:
