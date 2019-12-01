@@ -1,0 +1,7 @@
+
+//for migrate sql datas to mysql
+python3 manage.py dumpdata -e contenttypes -e admin -e auth.Permission --natural-foreign --natural-primary --indent=2 > datadump.json
+
+
+server user: root
+pass: aXVfT#kPumKN

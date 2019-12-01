@@ -22,6 +22,8 @@ urlpatterns = [
     path('support/latestnews/', views.latest_new, name='latest-news'),
     path('support/ticket/', views.ticket, name='ticket'),
     path('support/slider/', views.slider, name='slider'),
+
+    path('upload/productImage/', views.uploadProductImage, name='upload-product-image')
 ]
 
 if settings.DEBUG:

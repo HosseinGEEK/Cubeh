@@ -361,3 +361,20 @@ def slider(request):
         groups.append(s.image_url)
 
     return HttpResponse(dumps(groups))
+
+
+@csrf_exempt
+def uploadProductImage(request):
+    if(request.method == "POST"):
+        info = loads(request.body)
+        img = info['image']
+        name = info['name']
+        path = 'media/productImg/' + name + '.png'
+
+        imgdata = base64.b64decode(img)
+        if img != '' and name != '':
+            with open(path, 'wb') as f:
+                f.write(imgdata)
+            HttpResponse(dumps({'status': '1'}))
+        else:
+            HttpResponse(dumps({'status': 'یکی از فیلد ها خالی است'}))
