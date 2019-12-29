@@ -70,12 +70,13 @@ class User(models.Model):
 
 
 class Order(models.Model):
+    date = jalali.Gregorian(datetime.now().date()).persian_string()
+    print(date)
     order_number = models.CharField(primary_key=True, unique=True, max_length=15)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     total_price = models.CharField(max_length=15)
-    order_record_date = models.CharField(default=jalali.Gregorian(datetime.now().date()).persian_string(),
-                                         max_length=20, editable=False)
+    order_record_date = models.CharField(default=date, max_length=20, editable=False)
 
     def __str__(self):
         return self.user.phone_number + '-->' + self.order_record_date
