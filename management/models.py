@@ -20,7 +20,16 @@ class Product(models.Model):
     name = models.CharField(max_length=50)
     image_url = models.CharField(max_length=50)
     priority = models.IntegerField()
-    brands = (('easy', 'ایزی پایپ'), ('new', 'نیو پایپ'), ('ica', 'ایساتیس'))
+    brands = (
+        ('نیو پایپ', 'نیو پایپ'),
+        ('بهتراشان', 'بهتراشان'),
+        ('آذین', 'آذین'),
+        ('پویا', 'پویا'),
+        ('صبا', 'صبا'),
+        ('داراکار', 'داراکار'),
+        ('وینوپلاستیک', 'وینوپلاستیک'),
+        ('پارس پلاست', 'پارس پلاست'),
+    )
     brand = models.CharField(max_length=10, choices=brands, blank=True, null=True)
     types = (('main', 'main'), ('other', 'other'))
     type = models.CharField(max_length=5, choices=types)

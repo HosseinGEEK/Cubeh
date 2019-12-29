@@ -3,8 +3,6 @@ import os
 from django.core.files.storage import FileSystemStorage
 import base64
 from django.http import HttpResponse
-
-from cubeh import settings
 from .models import User, Order, Group, Product, Size, Question, Ticket, Slider, LatestNews
 from json import dumps, loads
 from django.views.decorators.csrf import csrf_exempt
@@ -60,15 +58,7 @@ def size(request):
             info = loads(request.body.decode('utf-8'))
             product_name = info[0]
             brand = info[1]
-            if brand == 'ایزی پایپ':
-                b = 'easy'
-            elif brand == 'نیو پایپ':
-                b = 'new'
-            elif brand == 'ایساتیس':
-                b = 'ica'
-            else:
-                b = None
-            sizes = Size.objects.filter(product__name=product_name, product__brand=b)
+            sizes = Size.objects.filter(product__name=product_name, product__brand=brand)
 
             for s in sizes:
                 context = {
@@ -285,7 +275,6 @@ def update_profile(request):
     return HttpResponse('<h1>:)</h1>')
 
 
-
 @csrf_exempt
 def user_info(request):
     if request.method == "POST":
@@ -336,7 +325,7 @@ def latest_new(request):
 
 @csrf_exempt
 def ticket(request):
-    if (request.method == "POST"):
+    if request.method == "POST":
         info = loads(request.body.decode('utf-8'))
         phone_num = info['phone_number']
         ti = info['title']
@@ -365,7 +354,7 @@ def slider(request):
 
 @csrf_exempt
 def uploadProductImage(request):
-    if(request.method == "POST"):
+    if request.method == "POST":
         info = loads(request.body)
         img = info['image']
         name = info['name']
@@ -382,7 +371,7 @@ def uploadProductImage(request):
 
 @csrf_exempt
 def uploadGroupImage(request):
-    if(request.method == "POST"):
+    if request.method == "POST":
         info = loads(request.body)
         img = info['image']
         name = info['name']
