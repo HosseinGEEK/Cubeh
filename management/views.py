@@ -384,3 +384,19 @@ def uploadGroupImage(request):
             return HttpResponse(dumps({'status': '1'}))
         else:
             return HttpResponse(dumps({'status': 'یکی از فیلد ها خالی است'}))
+			
+@csrf_exempt
+def uploadSliderImage(request):
+    if request.method == "POST":
+        info = loads(request.body)
+        img = info['image']
+        name = info['name']
+        path = 'media/sliderImg/' + name + '.png'
+
+        imgdata = base64.b64decode(img)
+        if img != '' and name != '':
+            with open(path, 'wb') as f:
+                f.write(imgdata)
+            return HttpResponse(dumps({'status': '1'}))
+        else:
+            return HttpResponse(dumps({'status': 'یکی از فیلد ها خالی است'}))
