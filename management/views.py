@@ -242,7 +242,7 @@ def password_reminder(request):
 
             if len(user) > 0:
                 password = user[0].password
-                return HttpResponse(dumps("پنل پیامکی"))
+                return HttpResponse(dumps({"password": password}))
             else:
                 return HttpResponse(dumps("چنین کاربری وجود ندارد!!!"))
         except:
