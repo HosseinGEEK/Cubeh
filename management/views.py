@@ -1,6 +1,5 @@
-import os
+from . import jalali
 
-from django.core.files.storage import FileSystemStorage
 import base64
 from django.http import HttpResponse
 from .models import User, Order, Group, Product, Size, Question, Ticket, Slider, LatestNews
@@ -84,7 +83,8 @@ def order(request):
             number = info['order_number']
             content = info['order_content']
             total_p = info['total_price']
-            o = Order(order_number=number, user=user, content=content, total_price=total_p)
+            date = jalali.Gregorian(info['current_date']).persian_string()
+            o = Order(order_number=number, user=user, content=content, total_price=total_p, order_record_date=date)
             o.save(force_insert=True)
             return HttpResponse(dumps({"record": "1"}))
         except:
@@ -176,7 +176,8 @@ def register(request):
             lname = info['lname']
             phone_num = info['phone_number']
             password = info['password']
-            user = User(fname=fname, lname=lname, phone_number=phone_num, password=password)
+            date = jalali.Gregorian(info['current_date']).persian_string()
+            user = User(fname=fname, lname=lname, phone_number=phone_num, password=password, join_date=date)
             user.save(force_insert=True)
             return HttpResponse(dumps({"register": "1"}))
         except:
